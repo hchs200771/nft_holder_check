@@ -1,33 +1,31 @@
-.App {
-  text-align: center;
+@import url(https://fonts.googleapis.com/css?family=Roboto+Slab);
+body{
+  font-family: 'Roboto Slab';
 }
 
-.container {
-  background-color: #282c34;
+.App {
+  text-align: center;
+  background: linear-gradient(#263280, #9198e5);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
-}
-
-button{
-  display: inline-block;
-  cursor: pointer;
-  padding: 15px 15px;
-  margin: 0 10px;
-  text-align: center;
-  color: #f1c40f;
-  border: 1px solid #f1c40f;
-  text-transform: uppercase;
-  background-color: rgba(0,0,0,0);
+  margin-top: -10px;
 }
 
 span{
-  color: #faed33;
+  color: #f1c40f;
   opacity: 0.4;
   display: inline-block;
   margin-right: 10px;
+}
+.project_name {
+  color: #31c46f;
+}
+
+img{
+  width: 30vw;
 }
