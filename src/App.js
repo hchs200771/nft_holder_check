@@ -84,16 +84,17 @@ function App() {
 
   return (
     <div className="App">
-        { contract ? (
-          <h2> <span className='project_name'>{name}</span> 認證工具</h2>
-        ) : ''
+        {
+          contract ? (
+            <h2> <span className='project_name'>{name}</span> 認證</h2>
+          ) : ''
         }
         <p> 智能合約地址: { contractAddress } </p>
-        <span>{ currentAccount ? (`持有者錢包地址：${currentAccount}`) : "請先連結錢包" } </span>
         {
           currentAccount ?
           (
             <div>
+              <CurrentAccount>持有者錢包地址：{currentAccount}</CurrentAccount>
               <p> 持有 {name} 數量: <Count>{ catNumber } </Count>隻</p>
               <NFTId>
               {
@@ -113,9 +114,14 @@ function App() {
                 }
               </Gallery>
             </div>
-          ) : <Button className="enableEthereumButton" onClick={connectAccount}>connect wallet</Button>
+          ) :
+          (
+            <div>
+              <span>請先連結錢包</span>
+              <Button className="enableEthereumButton" onClick={connectAccount}>connect wallet</Button>
+            </div>
+          )
         }
-
     </div>
   );
 }
@@ -138,6 +144,11 @@ const Button = styled.button`
 
 const Count = styled.span`
   color: red;
+`
+
+const CurrentAccount = styled.span`
+  color: #f1c40f;
+  font-size: 0.5 em;
 `
 
 const NFTId = styled.p`
