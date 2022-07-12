@@ -9,24 +9,11 @@ const { useEffect, useState } = React;
 function App() {
   const [currentAccount, setCurrentAccount] = useState()
   const [contract, setContract] = useState()
-  const [name, setName] = useState()
+  const [name, setName] = useState('')
   const [catNumber, setCatNumber] = useState(0)
   const [catIds, setCatIds] = useState([])
   const [catImages, setCatImages] = useState([])
 
-  // set chain and account
-  useEffect(() => {
-    const updateCurrentAccounts = accounts => {
-      const [_account] = accounts;
-      setCurrentAccount(_account);
-    }
-    window.ethereum.request({ method: 'eth_requestAccounts' }).then(updateCurrentAccounts);
-    window.ethereum.on("accountsChanged", updateCurrentAccounts);
-
-    return (() => {
-      window.ethereum.off('accountsChanged', updateCurrentAccounts);
-    })
-  }, [])
 
   // setContract
   useEffect(() => {
@@ -41,14 +28,35 @@ function App() {
     })
   }, [])
 
-  // get project name and nft number and ids
+  // set chain and account
+  const connectAccount = () => {
+    const updateCurrentAccounts = accounts => {
+      const [_account] = accounts;
+      setCurrentAccount(_account);
+      setCatNumber(0)
+      setCatIds([])
+      setCatImages([])
+    }
+
+    window.ethereum.request({ method: 'eth_requestAccounts' }).then(updateCurrentAccounts);
+    window.ethereum.on("accountsChanged", updateCurrentAccounts)
+  }
+
+
+  // get project name
   useEffect(() => {
     contract?.name().then(setName)
+  }, [contract])
+
+
+  // get nft number
+  useEffect(() => {
     contract?.balanceOf(currentAccount).then((num) => {
       setCatNumber(Number(num))
     })
-  }, [contract])
+  }, [currentAccount])
 
+  // get nft ids
   useEffect(()=>{
     if (catNumber === 0) { return; }
     for (let i = 0; i < catNumber; i++) {
@@ -61,6 +69,7 @@ function App() {
     }
   }, [catNumber])
 
+  // get nft images
   useEffect(()=> {
     if (catNumber !== catIds.length) { return; }
     for (let i = 0; i < catIds.length; i++) {
@@ -79,29 +88,53 @@ function App() {
           <h2> <span className='project_name'>{name}</span> 認證工具</h2>
         ) : ''
         }
-        <span>{ currentAccount ? (`持有者錢包地址：${currentAccount}`) : "請先連結錢包" } </span>
         <p> 智能合約地址: { contractAddress } </p>
-        <p> 持有 {name} 數量: <Count>{ catNumber } </Count>隻</p>
-        <NFTId>
+        <span>{ currentAccount ? (`持有者錢包地址：${currentAccount}`) : "請先連結錢包" } </span>
         {
-          catIds.length === 0 ?
-            `你沒有 ${name} 喔` :
-            (`持有 id: ${ catIds.join(', ') }`)
+          currentAccount ?
+          (
+            <div>
+              <p> 持有 {name} 數量: <Count>{ catNumber } </Count>隻</p>
+              <NFTId>
+              {
+                catIds.length === 0 ?
+                  `你沒有 ${name} 喔` :
+                  (`持有 id: ${ catIds.join(', ') }`)
+              }
+              </NFTId>
+              <Gallery>
+                {
+                  catImages?.map((nft, i) => (
+                    <div key={i}>
+                      <img src={nft} />
+                      <p>第 {i + 1} 隻貓咪</p>
+                    </div>
+                  ))
+                }
+              </Gallery>
+            </div>
+          ) : <Button className="enableEthereumButton" onClick={connectAccount}>connect wallet</Button>
         }
-        </NFTId>
-        <Gallery>
-          {
-            catImages?.map((nft, i) => (
-              <div key={i}>
-                <img src={nft} />
-                <p>第 {i + 1} 隻貓咪</p>
-              </div>
-            ))
-          }
-        </Gallery>
+
     </div>
   );
 }
+
+const Button = styled.button`
+  display: inline-block;
+  cursor: pointer;
+  padding: 15px 15px;
+  margin: 10px 10px;
+  text-align: center;
+  text-weight: 700;
+  color: #f1c40f;
+  border: 2px solid #f1c40f;
+  text-transform: uppercase;
+  background-color: rgba(0,0,0,0);
+  &:focus{
+    outline: none;
+  }
+`
 
 const Count = styled.span`
   color: red;
