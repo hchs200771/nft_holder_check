@@ -48,8 +48,8 @@ function App() {
       const library = new ethers.providers.Web3Provider(provider);
       const accounts = await library.listAccounts();
       const network = await library.getNetwork();
-      const balance = await library.getBalance();
-      console.log('balance', balance);
+      const balance = await library.getBalance(accounts[0]);
+      console.log('balance: ', Number(balance) / (10 ** 18));
       setProvider(provider);
       setLibrary(library);
       if (accounts) setCurrentAccount(accounts[0]);
