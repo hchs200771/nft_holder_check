@@ -33,6 +33,7 @@ function App() {
   const [library, setLibrary] = useState();
   const [error, setError] = useState("");
   const [chainId, setChainId] = useState();
+  const [balance, setBalance] = useState(0);
 
   // connect account
   const connectWallet = async () => {
@@ -48,8 +49,6 @@ function App() {
       const library = new ethers.providers.Web3Provider(provider);
       const accounts = await library.listAccounts();
       const network = await library.getNetwork();
-      const balance = await library.getBalance(accounts[0]);
-      console.log('balance: ', Number(balance) / (10 ** 18));
       setProvider(provider);
       setLibrary(library);
       if (accounts) setCurrentAccount(accounts[0]);
@@ -79,6 +78,16 @@ function App() {
     })
     setCatIds([])
     setCatImages([])
+  }, [contract, currentAccount])
+
+  // get balance
+  useEffect(() => {
+    if(!library) return
+    const changeBalance = async () => {
+      const balance2 = await library.getBalance(currentAccount)
+      setBalance((Number(balance2) / (10 ** 18)).toPrecision(4))
+    }
+    changeBalance()
   }, [contract, currentAccount])
 
   // get nft ids
@@ -115,7 +124,13 @@ function App() {
           currentAccount ?
           (
             <div>
-              <CurrentAccount>持有者錢包地址：{currentAccount}</CurrentAccount>
+              <CurrentAccount>
+                持有者錢包地址：{currentAccount}
+              </CurrentAccount>
+              <br></br>
+              <AccountBalance>
+                錢包餘額：{balance} Eth
+              </AccountBalance>
               <p> 持有數量: <Count>{ catNumber } </Count>隻</p>
               <NFTId>
               {
@@ -166,9 +181,13 @@ const Button = styled.button`
 const Count = styled.span`
   color: red;
 `
-
 const CurrentAccount = styled.span`
   color: #f1c40f;
+  font-size: 0.5 em;
+`
+
+const AccountBalance = styled.span`
+  color: #c1d4df;
   font-size: 0.5 em;
 `
 
